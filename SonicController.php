@@ -36,7 +36,7 @@ class SonicController extends BeeController {
     public function GetCaptcha() {
         $builder = new CaptchaBuilder();
         $builder->build();
-        $salt = parse_ini_file("config.ini", true)["db_sonic"]["captchasalt"];
+        $salt = $this->GetConfigInfo("db_sonic", "captchasalt");
         $phrase = strtr(strtolower($builder->getPhrase()), "01", "ol");
         $token = password_hash($salt.$phrase, PASSWORD_DEFAULT);
         return $this->response->Custom([
@@ -48,7 +48,7 @@ class SonicController extends BeeController {
     public function PostFeedback(SonicPostFeedback $f) {
         $this->AssertRequired($f->captcha);
         if(strlen($f->token) === 0) { throw new Exception("Missing CAPTCHA. Please refresh the page and try again."); }
-        $salt = parse_ini_file("config.ini", true)["db_sonic"]["captchasalt"];
+        $salt = $this->GetConfigInfo("db_sonic", "captchasalt");
         $phrase = strtr(strtolower($f->captcha), "01", "ol");
         $token = $salt.$phrase;
         if(!password_verify($token, $f->token)) { throw new Exception("Invalid CAPTCHA. Please refresh the page and try again."); }
