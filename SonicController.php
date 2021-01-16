@@ -21,6 +21,8 @@
  * @see https://github.com/HauntedBees/BeeAPI
  */
 class SonicController extends BeeController {
+    private string $puncregex_sql = "'[-!''.,]'";
+    private string $puncregex_php = "/[-!'.,]/";
     public function __construct() { parent::__construct("sonic"); }
     /* #region Auth */
     public function PostLogin(BeeCredentials $credentials) {
@@ -222,8 +224,8 @@ class SonicController extends BeeController {
         $whereClause = "";
         $params = [];
         if($query !== "") {
-            $whereClause = "WHERE e.name LIKE :q";
-            $params = ["q" => "%$query%"];
+            $whereClause = "WHERE e.name LIKE :q OR REGEXP_REPLACE(e.name, $this->puncregex_sql, '') LIKE :qr";
+            $params = ["q" => "%$query%", "qr" => "%".preg_replace($this->puncregex_php, "", $query)."%"];
         }
         $tbl = $this->db->GetObjects("SonicCompanyList",
             "SELECT e.name, c.name AS categoryname, c.icon AS categoryicon, e.id, COUNT(DISTINCT i.id) AS issues, COUNT(DISTINCT r.child) AS children
@@ -287,8 +289,10 @@ class SonicController extends BeeController {
                 LEFT JOIN entity p ON a.ancestorid = p.id
             WHERE e.name LIKE :n
                 OR s.synonym LIKE :n
+                OR REGEXP_REPLACE(e.name, $this->puncregex_sql, '') LIKE :nr
+                OR REGEXP_REPLACE(s.synonym, $this->puncregex_sql, '') LIKE :nr
             GROUP BY e.name, e.id
-            LIMIT 10", ["n" => "%$query%"]));
+            LIMIT 10", ["n" => "%$query%", "nr" => "%".preg_replace($this->puncregex_php, "", $query)."%"]));
     }
     /** @return string[]+string[]+string[] */
     public function GetAdditionalCompanyInfo(int $companyId) {
