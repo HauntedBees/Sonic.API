@@ -49,11 +49,11 @@ class SonicController extends BeeController {
     /** @return string */
     public function PostFeedback(SonicPostFeedback $f) {
         $this->AssertRequired($f->captcha);
-        if(strlen($f->token) === 0) { throw new Exception("Missing CAPTCHA. Please refresh the page and try again."); }
+        if(strlen($f->token) === 0) { return $this->response->Error("Missing CAPTCHA. Please refresh the page and try again."); }
         $salt = $this->GetConfigInfo("db_sonic", "captchasalt");
         $phrase = strtr(strtolower($f->captcha), "01", "ol");
         $token = $salt.$phrase;
-        if(!password_verify($token, $f->token)) { throw new Exception("Invalid CAPTCHA. Please refresh the page and try again."); }
+        if(!password_verify($token, $f->token)) { return $this->response->Error("Incorrect CAPTCHA. Please try again or refresh the page to load a new one."); }
         
         $this->AssertRequired($f->text);
         $this->AssertLength($f->text, 1000);
