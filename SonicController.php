@@ -376,6 +376,13 @@ class SonicController extends BeeController {
                 $parentVals[$parent->chain]->rootname = $parent->name;
             }
         }
+
+        $company->children = $this->db->GetObjects("SonicChildCompany", "
+            SELECT r.child, e.name AS text
+            FROM relationships r
+                INNER JOIN entity e ON r.child = e.id
+            WHERE r.parent = :i AND r.relationtype = 1", $params);
+
         return $this->response->Custom(["result" => $company, "parentVals" => $parentVals]);
     }
     /* #endregion */

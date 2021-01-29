@@ -169,6 +169,10 @@ class SonicParentCompany {
     public int $depth;
     public int $chain;
 }
+class SonicChildCompany {
+    public int $child;
+    public string $text;
+}
 class SonicCompanyChain {
     public string $text;
     public int $rootid;
