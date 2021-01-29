@@ -214,7 +214,9 @@ class SonicController extends BeeController {
     }
     /** @return array */
     public function GetCachedFullGraphData() {
-        echo file_get_contents("./bigData.json");
+        $content = @file_get_contents("./bigData.json", false);
+        if($content === false) { throw new Exception("Graph Data not found."); }
+        echo $content;
     }
     /* #endregion */
     /* #region Companies */
