@@ -337,6 +337,7 @@ class SonicController extends BeeController {
             LIMIT 1", ["n" => $companyName]);
 
         $params = ["i" => $company->id];
+        $this->db->ExecuteNonQuery("INSERT INTO pageviews (entityid, viewed) VALUES (:i, NOW())", ["i" => $company->id]);
         $company->synonyms = $this->db->GetStrings("SELECT synonym FROM synonym WHERE entityid = :i", $params);
         $company->hasAddtlRelationships = $this->db->GetBool("
             WITH RECURSIVE ancestor AS (
