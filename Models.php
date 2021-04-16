@@ -101,8 +101,8 @@ class SonicGraphInfo {
     public int $parentx;
     public int $parenty;
     public string $parentImg;
-    public int $childx;
-    public int $childy;
+    public ?int $childx;
+    public ?int $childy;
     public string $childImg;
     public string $relationtype;
     public bool $me;
